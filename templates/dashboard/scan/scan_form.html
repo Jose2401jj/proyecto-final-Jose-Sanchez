@@ -1,0 +1,253 @@
+{% extends 'components/base.html' %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'css/scam.css' %}" />
+
+<main class="main-container">
+  <div class="form-container">
+    <div class="main-card">
+      <div class="card-header">
+        <h2><i class="fas fa-microscope"></i> Análisis de Imágenes Médicas</h2>
+      </div>
+
+      <div class="card-body">
+        <!-- Sección de Búsqueda de Paciente -->
+        <div class="section fade-in">
+          <div class="section-title">
+            <i class="fas fa-search"></i> Buscar Paciente
+          </div>
+          <div class="search-container">
+            <div class="row">
+              <div class="col-md-8">
+                <div class="form-group">
+                  <label for="dni_search" class="form-label fw-semibold mb-2">
+                    DNI del Paciente:
+                  </label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      id="dni_search"
+                      class="form-control"
+                      placeholder="Ingrese DNI del paciente..."
+                      maxlength="10"
+                    />
+                    <button type="button" class="btn-modern" id="btn_buscar">
+                      <i class="fas fa-search"></i> Buscar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Información del Paciente Encontrado -->
+          <div
+            id="paciente_info"
+            class="patient-info slide-up"
+            style="display: none"
+          >
+            <h5><i class="fas fa-user-check"></i> Paciente Encontrado</h5>
+            <div class="patient-details">
+              <div class="patient-detail-item">
+                <strong>Nombre:</strong> <span id="patient_name"></span>
+              </div>
+              <div class="patient-detail-item">
+                <strong>DNI:</strong> <span id="patient_dni"></span>
+              </div>
+              <div class="patient-detail-item">
+                <strong>Edad:</strong> <span id="patient_age"></span>
+              </div>
+              <div class="patient-detail-item">
+                <strong>Teléfono:</strong> <span id="patient_phone"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulario de Análisis -->
+        <form
+          id="analisis-form"
+          method="POST"
+          enctype="multipart/form-data"
+          style="display: none"
+          class="slide-up"
+        >
+          {% csrf_token %}
+          <input type="hidden" id="paciente_id_hidden" name="paciente_id" />
+
+          <div class="section">
+            <div class="section-title">
+              <i class="fas fa-upload"></i> Subir Imágenes Médicas
+            </div>
+            <div
+              class="upload-zone"
+              onclick="document.getElementById('imagenes').click()"
+            >
+              <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <h5 class="mb-2">
+                Arrastra archivos aquí o haz clic para seleccionar
+              </h5>
+              <p class="text-muted mb-3">Soporta: JPG, PNG, DCM</p>
+              <input
+                type="file"
+                id="imagenes"
+                name="imagenes"
+                multiple
+                required
+                accept=".jpg,.jpeg,.png,.dcm"
+                style="display: none"
+              />
+            </div>
+            <div id="image_preview" class="image-preview"></div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-save">
+              <i class="fas fa-microscope"></i> Analizar y Guardar
+            </button>
+            <button type="button" class="btn-cancel" onclick="resetForm()">
+              <i class="fas fa-times"></i> Cancelar
+            </button>
+          </div>
+        </form>
+
+        <!-- Sección de Resultados -->
+        <div id="resultados_section" style="display: none">
+          <div class="result-card shadow-sm rounded p-4 bg-white">
+            <div
+              class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2"
+            >
+              <h4 class="text-primary">
+                <i class="fas fa-notes-medical me-2"></i>Resultados del Análisis
+              </h4>
+              <span class="badge bg-success px-3 py-2"
+                >Análisis completado</span
+              >
+            </div>
+
+            <!-- Información del Paciente -->
+            <div class="row mb-4 text-muted">
+              <div class="col-md-4 mb-2">
+                <i class="fas fa-user me-2 text-dark"></i
+                ><strong>Paciente:</strong>
+                <span id="result_patient_name" class="ms-1"></span>
+              </div>
+              <div class="col-md-4 mb-2">
+                <i class="fas fa-calendar-alt me-2 text-dark"></i
+                ><strong>Fecha:</strong>
+                <span id="analysis_date" class="ms-1"></span>
+              </div>
+              <div class="col-md-4 mb-2">
+                <i class="fas fa-images me-2 text-dark"></i
+                ><strong>Imágenes:</strong>
+                <span id="images_count" class="ms-1"></span>
+              </div>
+            </div>
+
+            <!-- Diagnóstico -->
+            <div class="mb-4">
+              <h5>
+                <i class="fas fa-diagnoses text-danger me-2"></i>Diagnóstico
+              </h5>
+              <div
+                id="diagnosis_results"
+                class="alert alert-warning fw-semibold"
+              ></div>
+            </div>
+
+            <!-- Hallazgos -->
+            <div class="mb-4">
+              <h5>
+                <i class="fas fa-search text-info me-2"></i>Hallazgos
+                Principales
+              </h5>
+              <ul id="main_findings" class="list-group list-group-flush"></ul>
+            </div>
+
+            <!-- Nivel de Confianza -->
+            <div class="mb-4">
+              <h5>
+                <i class="fas fa-check-circle text-success me-2"></i>Confianza
+                del Modelo
+              </h5>
+              <div class="progress rounded-pill" style="height: 30px">
+                <div
+                  id="confidence_fill"
+                  class="progress-bar progress-bar-striped progress-bar-animated bg-success text-dark fw-bold"
+                  role="progressbar"
+                  style="width: 0%"
+                >
+                  <span id="confidence_text">Confianza: 0%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recomendaciones -->
+            <div class="mb-4">
+              <h5>
+                <i class="fas fa-stethoscope text-secondary me-2"></i
+                >Recomendaciones Médicas
+              </h5>
+              <div class="p-3 bg-light border rounded">
+                <p id="recommendations" class="mb-0"></p>
+              </div>
+            </div>
+
+            <!-- Imágenes Procesadas -->
+            <div>
+              <h5>
+                <i class="fas fa-image text-primary me-2"></i>Imágenes
+                Procesadas
+              </h5>
+              <div
+                id="imagenes_resultado_container"
+                class="imagenes-grid"
+              ></div>
+            </div>
+            <!-- Botones de acción -->
+            <div class="d-flex justify-content-between mt-4">
+              <!-- Botón de Regresar -->
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="window.location.href='{% url 'core:scan_list' %}'"
+              >
+                <i class="fas fa-arrow-left me-1"></i> Regresar
+              </button>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Modal para vista ampliada -->
+<div id="modalImagen" onclick="cerrarModalImagen()">
+  <span class="close-btn" onclick="cerrarModalImagen()">&#10005;</span>
+  <div id="modalZoomContainer">
+    <img id="modalImagenVista" src="" alt="Vista ampliada" />
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loading_overlay" class="loading-overlay">
+  <div class="loading-content">
+    <div class="spinner"></div>
+    <h5 id="loading_text">Procesando...</h5>
+    <p id="loading_description" class="text-muted">
+      Analizando imágenes médicas
+    </p>
+  </div>
+</div>
+
+<!-- Scripts -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/scan_form.js' %}"></script>
+{% endblock %}

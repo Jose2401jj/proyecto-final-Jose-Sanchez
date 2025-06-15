@@ -1,0 +1,34 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard/report/report_detail.css' %}">
+
+<div class="report-container">
+    <div class="report-header">
+        <h2>Detalle del Informe</h2>
+        
+    </div>
+
+    <div class="report-card">
+        
+
+        <div class="info-block">
+            <p><strong>Paciente:</strong> {{ report.diagnostico.paciente.nombres.upper }} {{ report.diagnostico.paciente.apellidos.upper }} ({{ report.diagnostico.paciente.contacto }})</p>
+            <p><strong>Médico:</strong> Dr. {{ report.diagnostico.doctor.user.first_name.upper }} {{ report.diagnostico.doctor.user.last_name.upper }} ({{ report.diagnostico.doctor.especialidad }})</p>
+        </div>
+
+        <p><strong>Fecha de creación:</strong> {{ report.diagnostico.fecha_diagnostico|date:"d \d\e F \d\e Y, H:i" }}</p>
+        <p><strong>Descripción:</strong> {{ report.diagnostico.observaciones_medicas }}</p>
+
+        {% if report.archivo_pdf %}
+            <div class="pdf-preview-container">
+                <iframe src="{{ report.archivo_pdf.url }}"></iframe>
+            </div>
+            {% comment %} <a href="{{ report.archivo_pdf.url }}" target="_blank" class="download-btn">📄 Descargar PDF</a> {% endcomment %}
+        {% else %}
+            <p class="no-file">No hay archivo disponible para este informe.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

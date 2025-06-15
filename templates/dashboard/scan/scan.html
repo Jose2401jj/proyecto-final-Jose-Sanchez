@@ -1,0 +1,237 @@
+{% extends 'components/base.html' %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard/scan/scan.css' %}">
+<main class="container-fluid">
+  <div class="table-header">
+    <h1
+      class="h3"
+      style="
+        font-size: 28px;
+        font-weight: bold;
+        color: #333;
+        border-bottom: 3px solid #2b4c7e;
+        display: inline-block;
+        padding-bottom: 5px;
+      "
+    >
+      Escaneo - Panel Administrativo
+    </h1>
+
+    <div class="table-controls">
+      <a href="{% url 'core:form_procesar_analisis'%}" class="btn-add"
+        >+ Agregar Escaneo</a
+      >
+    </div>
+  </div>
+
+  <!-- Barra de búsqueda y filtro -->
+  <div class="search-container">
+    <select id="filter-type" class="search-select">
+      <option value="id">ID</option>
+      <option value="nombre">Nombre</option>
+      <option value="doctor">Doctor</option>
+      <option value="correo">Email</option>
+      <option value="telefono">Teléfono</option>
+      <option value="genero">Género</option>
+    </select>
+    <input
+      type="text"
+      id="search-input"
+      placeholder="Buscar..."
+      class="search-input"
+    />
+  </div>
+
+  <!-- Tabla de clientes -->
+  <div class="table-container">
+    <table class="table" id="clientes-table">
+      <thead>
+        <tr>
+          <th>ID Escaneo</th>
+          <th>Paciente</th>
+          <th>Doctor</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for diag in diagnostico %}
+        <tr>
+          <td>SCAN-{{ diag.id|stringformat:"04d" }}</td>
+          <td>{{ diag.paciente.nombres }} {{ diag.paciente.apellidos }}</td>
+          <td>{{ diag.doctor.user.get_full_name }}</td>
+          <td>{{ diag.fecha_diagnostico|date:"Y-m-d H:i" }}</td>
+
+          <td class="action-buttons">
+           <a href="{% url 'core:revision_manual_detalle' diag.id %}" class="btn-edit">Detalle de Scan</a> 
+            <a href="#" class="btn-delete" onclick="confirmarEliminacion('{% url 'core:scan_delete' diag.id %}', 'SCAN-{{ diag.id|stringformat:"04d" }}')">Eliminar</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5">No se encontraron diagnósticos.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Controles de paginación -->
+    <div class="pagination-controls">
+      <button id="prev-page" class="pagination-btn">&laquo; Anterior</button>
+      <span id="page-info">Página <span id="current-page">1</span> de <span id="total-pages">1</span></span>
+      <button id="next-page" class="pagination-btn">Siguiente &raquo;</button>
+    </div>
+  </div>
+</main>
+
+
+
+<script>
+  // Variables de paginación
+  let currentPage = 1;
+  const rowsPerPage = 6;
+  let filteredRows = [];
+  let allRows = [];
+
+  // Función para actualizar la tabla
+  function updateTable() {
+    const table = document.getElementById("clientes-table");
+    allRows = Array.from(table.querySelectorAll("tbody tr"));
+    
+    // Primero, resetear la visibilidad de todas las filas para el filtrado
+    allRows.forEach(row => {
+      row.style.display = "";
+    });
+
+    // Aplicar el filtro actual
+    applyFilter();
+
+    // Obtener las filas filtradas
+    filteredRows = allRows.filter(row => row.style.display !== "none");
+    
+    const totalPages = Math.max(1, Math.ceil(filteredRows.length / rowsPerPage));
+    
+    // Ajustar la página actual si está fuera de rango
+    if (currentPage > totalPages) {
+      currentPage = totalPages;
+    }
+    
+    document.getElementById("total-pages").textContent = totalPages;
+    document.getElementById("current-page").textContent = currentPage;
+    
+    // Aplicar paginación
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    
+    filteredRows.forEach((row, index) => {
+      if (index >= startIndex && index < endIndex) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+    
+    // Actualizar estado de los botones
+    document.getElementById("prev-page").disabled = currentPage === 1;
+    document.getElementById("next-page").disabled = currentPage === totalPages;
+  }
+
+  // Función separada para aplicar filtros
+  function applyFilter() {
+    const input = document.getElementById("search-input").value.toLowerCase();
+    const filterType = document.getElementById("filter-type").value;
+
+    allRows.forEach((row) => {
+      let cell;
+      switch (filterType) {
+        case "id":
+          cell = row.cells[0].innerText.toLowerCase();
+          break;
+        case "nombre":
+          cell = row.cells[1].innerText.toLowerCase();
+          break;
+        case "doctor":
+          cell = row.cells[2].innerText.toLowerCase();
+          break;
+        case "correo":
+          cell = row.cells[2].innerText.toLowerCase();
+          break;
+        case "telefono":
+          cell = row.cells[3].innerText.toLowerCase();
+          break;
+        case "genero":
+          cell = row.cells[4].innerText.toLowerCase();
+          break;
+        default:
+          cell = "";
+      }
+
+      row.style.display = cell.includes(input) ? "" : "none";
+    });
+  }
+
+  // Event listeners para los botones de paginación
+  document.getElementById("prev-page").addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      updateTable();
+    }
+  });
+
+  document.getElementById("next-page").addEventListener("click", () => {
+    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+    if (currentPage < totalPages) {
+      currentPage++;
+      updateTable();
+    }
+  });
+
+  // Event listener para el campo de búsqueda
+  document.getElementById("search-input").addEventListener("keyup", function () {
+    currentPage = 1; // Resetear a la primera página
+    updateTable();
+  });
+
+  // Event listener para el cambio de tipo de filtro
+  document.getElementById("filter-type").addEventListener("change", function() {
+    currentPage = 1; // Resetear a la primera página
+    updateTable();
+  });
+
+  // Inicializar la tabla con paginación
+  document.addEventListener("DOMContentLoaded", () => {
+    updateTable();
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function confirmarEliminacion(url, scanId) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: `¿Deseas eliminar el escaneo ${scanId}? Esta acción no se puede deshacer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = url;
+        }
+    });
+}
+
+// Mostrar mensajes de éxito/error si existen
+{% if messages %}
+    {% for message in messages %}
+        Swal.fire({
+            title: '{{ message.tags|title }}',
+            text: '{{ message }}',
+            icon: '{% if message.tags == "success" %}success{% else %}error{% endif %}'
+        });
+    {% endfor %}
+{% endif %}
+</script>
+
+{% endblock %}

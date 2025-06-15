@@ -1,0 +1,452 @@
+/* Estilos globales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.container-fluid {
+    width: 100%;
+    padding: 20px;
+    background-color: #f4f6f9;
+}
+
+/* Encabezado de la tabla */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table-header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 3px solid #2a2185;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.table-controls {
+    display: flex;
+    justify-content: flex-end;
+    flex-grow: 1;
+}
+
+/* Botón de agregar */
+.btn-add {
+    background-color: #2b4c7e;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-add:hover {
+    background-color: #1e1768;
+}
+
+/* Contenedor de búsqueda */
+.search-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.search-select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+}
+
+.search-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 14px;
+    width: 250px;
+    transition: all 0.3s ease-in-out;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Contenedor de la tabla */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Tabla */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Encabezado con bordes redondeados */
+.table thead {
+    background-color: #2b4c7e;
+    color: white;
+}
+
+.table thead th {
+    padding: 15px;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: 2px solid #2a2185;
+}
+
+/* Bordes redondeados en los extremos de la cabecera */
+.table thead th:first-child {
+    border-top-left-radius: 10px;
+}
+
+.table thead th:last-child {
+    border-top-right-radius: 10px;
+}
+
+/* Estilos para filas */
+.table th,
+.table td {
+    padding: 15px;
+    text-align: left;
+}
+
+.table tbody tr {
+    transition: all 0.3s ease-in-out;
+}
+
+.table tbody tr:hover {
+    background-color: #c1cae2;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Botones de acción */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-edit,
+.btn-delete {
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+    display: inline-block;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-edit {
+    background-color: #ffc107dc;
+    color: black;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Mensaje de "No hay clientes" */
+.no-data {
+    text-align: center;
+    font-size: 16px;
+    color: #777;
+    padding: 20px;
+}
+
+
+.estado-normal {
+    color: green;
+    font-weight: bold;
+  }
+  .estado-viral {
+    color: orange;
+    font-weight: bold;
+  }
+  .estado-bacteriana {
+    color: red;
+    font-weight: bold;
+  }
+
+/* Form CLiente */
+/* Estilos del Formulario de Cliente */
+.form-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 30px;
+}
+
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    padding: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    background: linear-gradient(90deg, #2a2185, #1e1768);
+    color: white;
+}
+
+.card-body {
+    padding: 25px;
+}
+
+/* Estilos para mensajes de éxito y error */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 16px;
+    color: #333;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.3s ease-in-out;
+    background: #f9f9f9;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.5);
+    background: white;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+}
+
+.btn-save {
+    background: linear-gradient(90deg, #2a2185, #1e1768) !important;
+    color: white !important;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    font-size: 16px;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-save:hover {
+    background: linear-gradient(90deg, #1e1768, #140f4a) !important;
+    transform: scale(1.05);
+}
+
+.btn-cancel {
+    background: #dc3545 !important;
+    color: white !important;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    font-size: 16px;
+    display: inline-block;
+}
+
+.btn-cancel:hover {
+    background: #c82333 !important;
+    transform: scale(1.05);
+}
+
+/* User menu styles */
+.user {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.user-profile {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    z-index: 2;
+}
+
+.user-profile:hover {
+    transform: scale(1.05);
+}
+
+.user-profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-menu {
+    position: absolute;
+    top: 50px;  /* Ajustado para dar espacio al triángulo */
+    right: 0;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    width: 280px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 1000;
+}
+
+.user-menu.active {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.user-menu::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 16px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    transform: rotate(45deg);
+    box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.05);
+    z-index: 0;
+}
+
+.user-menu .user-info {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+}
+
+.user-menu .user-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.user-menu .info {
+    flex-grow: 1;
+}
+
+.user-menu .info .user-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.user-menu .info .user-email {
+    font-size: 14px;
+    color: #666;
+    word-break: break-all;
+}
+
+.user-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-menu ul li {
+    padding: 8px 0;
+}
+
+.user-menu ul li a {
+    display: flex;
+    align-items: center;
+    padding: 8px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.user-menu ul li a:hover {
+    background-color: #f5f5f5;
+}
+
+.user-menu ul li a ion-icon {
+    margin-right: 12px;
+    font-size: 20px;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.user-menu ul li a:hover ion-icon {
+    color: #2a2185;
+}

@@ -1,0 +1,111 @@
+.report-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.report-header h2 {
+    margin: 0;
+    font-size: 28px;
+    color: #2c3e50;
+}
+
+.back-btn {
+    text-decoration: none;
+    background-color: #f0f0f0;
+    padding: 8px 16px;
+    border-radius: 6px;
+    color: #333;
+    border: 1px solid #ccc;
+    transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.report-card h4 {
+    font-size: 24px;
+    color: #34495e;
+    margin-bottom: 10px;
+}
+
+.report-card p {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #444;
+}
+
+.info-block {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-left: 4px solid #3498db;
+    border-radius: 6px;
+}
+
+.info-block strong {
+    color: #2c3e50;
+}
+
+.pdf-preview-container {
+    margin-top: 25px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 600px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.pdf-preview-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.download-btn {
+    display: inline-block;
+    margin-top: 15px;
+    background-color: #2980b9;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.download-btn:hover {
+    background-color: #1c5980;
+}
+
+.no-file {
+    color: #c0392b;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .report-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .report-header h2 {
+        margin-bottom: 10px;
+    }
+
+    .pdf-preview-container {
+        height: 400px;
+    }
+}

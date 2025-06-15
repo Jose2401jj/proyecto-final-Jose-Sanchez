@@ -1,0 +1,144 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard/scan/revision_manul.css' %}">
+<main class="container-fluid revision-manual">
+  <div class="card main-card">
+    <div class="card-header patient-header">
+      <div class="patient-info">
+        <h4 class="mb-0">
+          <i class="fas fa-user-circle"></i>
+          {{ diagnostico.paciente.nombres }} {{ diagnostico.paciente.apellidos }}
+        </h4>
+        <div class="patient-details">
+          <span class="detail-item"><i class="fas fa-calendar"></i> {{ diagnostico.fecha_diagnostico|date:"d/m/Y H:i" }}</span>
+          <span class="detail-item"><i class="fas fa-user-md"></i> {{ diagnostico.doctor|default:"No asignado" }}</span>
+        </div>
+      </div>
+      <div class="status-badge {% if diagnostico.estado == 'validado' %}success{% elif diagnostico.estado == 'rechazado' %}danger{% else %}warning{% endif %}">
+        {{ diagnostico.estado|title }}
+      </div>
+    </div>
+
+    <div class="card-body">
+      {% if diagnostico.observaciones_medicas %}
+      <div class="medical-observations">
+        <h5><i class="fas fa-notes-medical"></i> Observaciones Médicas</h5>
+        <p>{{ diagnostico.observaciones_medicas }}</p>
+      </div>
+      {% endif %}
+
+      <div class="ai-results-section">
+        <h5 class="section-title"><i class="fas fa-robot"></i> Resultados del Análisis de IA</h5>
+        
+        {% for imagen in diagnostico.imagenes.all %}
+          {% with resultado=imagen.resultado_ia %}
+            {% if resultado %}
+              <div class="result-card">
+                <div class="images-grid">
+                  <div class="image-container">
+                    <h6>Imagen Original</h6>
+                    {% if imagen.imagen_original %}
+                      <img src="{{ imagen.imagen_original.url }}" alt="Imagen Original" class="medical-image">
+                    {% endif %}
+                  </div>
+                  <div class="image-container">
+                    <h6>Imagen Procesada</h6>
+                    {% if imagen.imagen_procesada %}
+                      <img src="{{ imagen.imagen_procesada.url }}" alt="Imagen Procesada" class="medical-image">
+                    {% endif %}
+                  </div>
+                  <div class="image-container">
+                    <h6>Mapa de Calor (GradCAM)</h6>
+                    {% if imagen.gradcam %}
+                      <img src="{{ imagen.gradcam.url }}" alt="GradCAM" class="medical-image">
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="diagnosis-details">
+                  <div class="detail-row">
+                    <span class="label"><i class="fas fa-stethoscope"></i> Diagnóstico IA:</span>
+                    <span class="value">{{ resultado.diagnostico_principal }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="label"><i class="fas fa-chart-line"></i> Confianza:</span>
+                    <span class="value confidence-badge">{{ resultado.confianza }}%</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="label"><i class="fas fa-search"></i> Hallazgos:</span>
+                    <span class="value">{{ resultado.hallazgos }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="label"><i class="fas fa-clipboard-list"></i> Recomendaciones:</span>
+                    <span class="value">{{ resultado.recomendaciones }}</span>
+                  </div>
+                  {% if resultado.areas_afectadas %}
+                  <div class="detail-row">
+                    <span class="label"><i class="fas fa-map-marker-alt"></i> Áreas Afectadas:</span>
+                    <span class="value">{{ resultado.areas_afectadas }}</span>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endwith %}
+        {% endfor %}
+      </div>
+
+      {% if diagnostico.estado == 'pendiente' %}
+        <div class="validation-section">
+          <h5 class="section-title"><i class="fas fa-clipboard-check"></i> Validación Médica</h5>
+          <form method="post" action="{% url 'core:validar_resultado' diagnostico.id %}" class="validation-form">
+            {% csrf_token %}
+            <div class="form-options">
+              <div class="option-group">
+                <input type="radio" name="accion" value="validar" id="validar_{{ diagnostico.id }}" required>
+                <label for="validar_{{ diagnostico.id }}" class="option-label success">
+                  <i class="fas fa-check-circle"></i> Validar Diagnóstico
+                </label>
+              </div>
+              <div class="option-group">
+                <input type="radio" name="accion" value="rechazar" id="rechazar_{{ diagnostico.id }}">
+                <label for="rechazar_{{ diagnostico.id }}" class="option-label danger">
+                  <i class="fas fa-times-circle"></i> Rechazar Diagnóstico
+                </label>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="observaciones_{{ diagnostico.id }}">
+                <i class="fas fa-comment-medical"></i> Observaciones Médicas:
+              </label>
+              <textarea 
+                class="form-control" 
+                id="observaciones_{{ diagnostico.id }}" 
+                name="observaciones" 
+                rows="3"
+                placeholder="Ingrese sus observaciones médicas aquí..."></textarea>
+            </div>
+
+            <div class="form-actions">
+              <a href="{% url 'core:scan_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Guardar Decisión
+              </button>
+            </div>
+          </form>
+        </div>
+      {% else %}
+        <div class="mt-4">
+          <a href="{% url 'core:scan_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</main>
+
+
+{% endblock %} 

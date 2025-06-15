@@ -1,0 +1,131 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard/pacientes/pacient_form.css' %}">
+<main class="container-fluid">
+  <div class="form-container">
+    <div class="card shadow-lg border-0">
+      <div class="card-header bg-primary text-white text-center">
+        <h2 class="mb-0">Agregar Paciente</h2>
+      </div>
+      <div class="card-body">
+
+        <form method="POST" id="paciente-form">
+          {% csrf_token %}
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="id_dni">DNI</label>
+              {{ form.dni }}
+              {% for error in form.dni.errors %}
+                <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_nombres">Nombre</label>
+              {{ form.nombres }}
+              {% for error in form.nombres.errors %}
+                <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_apellidos">Apellidos</label>
+              {{ form.apellidos }}
+              {% for error in form.apellidos.errors %}
+                <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_birth_date">Fecha de Nacimiento</label>
+              {{ form.birth_date }}
+              {% for error in form.birth_date.errors %}
+                <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_sexo">Género</label>
+              {{ form.sexo }}
+              {% for error in form.sexo.errors %}
+                <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_direccion">Dirección</label>
+              {{ form.direccion }}
+              {% for error in form.direccion.errors %}
+                <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_contacto">Contacto</label>
+              {{ form.contacto }}
+              {% for error in form.contacto.errors %}
+                <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="id_historial_clinico">Historial Clínico</label>
+            {{ form.historial_clinico }}
+            {% for error in form.historial_clinico.errors %}
+              <div class="alert-error">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="form-buttons">
+            <button type="submit" class="btn-save">Guardar Paciente</button>
+            <a href="{% url 'core:pacient_list' %}" class="btn-cancel">Cancelar</a>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+ 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.getElementById("paciente-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    let errorMessages = document.querySelectorAll(".alert-error");
+    if (errorMessages.length > 0) {
+      let errorText = "";
+      errorMessages.forEach((error) => {
+        errorText += error.innerText + "\n";
+      });
+
+      Swal.fire({
+        title: "Error",
+        text: errorText,
+        icon: "error",
+        confirmButtonColor: "#d33"
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¿Deseas guardar este cliente?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, Guardar",
+      cancelButtonText: "Cancelar"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        event.target.submit();
+      }
+    });
+  });
+</script>
+{% endblock %}

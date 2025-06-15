@@ -1,0 +1,135 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/dashboard/report/pdf_template.css' %}">
+   
+</head>
+
+<body>
+
+    <header>
+        <h1>Informe de Análisis Radiológico por IA</h1>
+        <p><strong>CereScanAI - Sistema de Diagnóstico Asistido</strong></p>
+        <p>Fecha del Informe: {{ diagnostico.fecha_diagnostico|date:"d/m/Y H:i" }}</p>
+    </header>
+
+    <section class="section">
+        <h2>Datos del Paciente</h2>
+        <table class="info-table">
+            <tr>
+                <td>Nombre Completo:</td>
+                <td>{{ diagnostico.paciente.nombres }} {{ diagnostico.paciente.apellidos }}</td>
+            </tr>
+            <tr>
+                <td>DNI:</td>
+                <td>{{ diagnostico.paciente.dni }}</td>
+            </tr>
+            <tr>
+                <td>Fecha de Nacimiento:</td>
+                <td>{{ diagnostico.paciente.birth_date|date:"d/m/Y" }}</td>
+            </tr>
+            <tr>
+                <td>Edad:</td>
+                <td>{{ diagnostico.paciente.edad }} años</td>
+            </tr>
+            <tr>
+                <td>Sexo:</td>
+                <td>{{ diagnostico.paciente.get_sexo_display }}</td>
+            </tr>
+            {% if diagnostico.paciente.contacto %}
+            <tr>
+                <td>Contacto:</td>
+                <td>{{ diagnostico.paciente.contacto }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </section>
+
+    <section class="section">
+        <h2>Información del Diagnóstico</h2>
+        <table class="info-table">
+            <tr>
+                <td>Médico Responsable:</td>
+                <td>{% if diagnostico.doctor %}Dr. {{ diagnostico.doctor.user.get_full_name }}{% else %}Sistema de IA{% endif %}</td>
+            </tr>
+            <tr>
+                <td>Fecha de Análisis:</td>
+                <td>{{ diagnostico.fecha_diagnostico|date:"d/m/Y H:i" }}</td>
+            </tr>
+            <tr>
+                <td>Estado:</td>
+                <td>{{ diagnostico.get_estado_display }}</td>
+            </tr>
+            <tr>
+                <td>Observaciones Médicas:</td>
+                <td>{{ diagnostico.observaciones_medicas|default:"Sin observaciones adicionales" }}</td>
+            </tr>
+        </table>
+    </section>
+
+    {% if imagenes_info %}
+    <section class="section">
+        <h2>Análisis de Imágenes</h2>
+        {% for imagen in imagenes_info %}
+        <div class="page-break-avoid">
+            <div class="image-container">
+                {% if imagen.original %}
+                <div class="image-box">
+                    <img src="{{ imagen.original }}" alt="Imagen Original" style="width: 200px; height: auto;">
+                    <p class="image-caption">Imagen Original</p>
+                </div>
+                {% endif %}
+                
+                {% if imagen.procesada %}
+                <div class="image-box">
+                    <img src="{{ imagen.procesada }}" alt="Imagen Procesada" style="width: 200px; height: auto;">
+                    <p class="image-caption">Imagen Procesada</p>
+                </div>
+                {% endif %}
+                
+                {% if imagen.gradcam %}
+                <div class="image-box">
+                    <img src="{{ imagen.gradcam }}" alt="Mapa de Calor (GradCAM)" style="width: 200px; height: auto;">
+                    <p class="image-caption">Mapa de Calor (GradCAM)</p>
+                </div>
+                {% endif %}
+            </div>
+            <hr style="margin: 20px 0;">
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <section class="section">
+        <h2>Resumen Clínico</h2>
+        <div style="background-color:#f8f9fa; padding: 20px; border-left: 4px solid #2b4c7e; border-radius: 6px;">
+            {% if resultados_ia %}
+                {% for resultado in resultados_ia %}
+                    {% if forloop.first %}
+                    <p><strong>Diagnóstico Principal:</strong> {{ resultado.diagnostico_principal }}</p>
+                    <p><strong>Confianza:</strong> {{ resultado.confianza|floatformat:1 }}%</p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            <p><strong>Conclusiones:</strong></p>
+            <p>El análisis por IA se ha completado. Este informe es una herramienta de apoyo diagnóstico y no reemplaza el criterio clínico profesional.</p>
+
+            <p><strong>Recomendaciones Generales:</strong></p>
+            <ul>
+                <li>Correlacionar con síntomas y antecedentes del paciente.</li>
+                <li>Realizar estudios complementarios si es necesario.</li>
+                <li>Consultar con un especialista para evaluación integral.</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="footer">
+        <p>Informe generado automáticamente por NeumoScan - Sistema de Diagnóstico Asistido por Inteligencia Artificial</p>
+    </div>
+
+</body>
+</html>

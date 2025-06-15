@@ -1,0 +1,90 @@
+.form-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  .full-width {
+    grid-column: 1 / -1;
+  }
+  .form-group label {
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: 500;
+  }
+  .form-group input,
+  .form-group textarea {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  .form-group textarea {
+    min-height: 100px;
+  }
+  .btn-save,
+  .btn-cancel {
+    padding: 10px 20px;
+    margin: 10px 10px 0 0;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .btn-save {
+    background-color: #2b4c7e;
+    color: white;
+  }
+  .btn-save:hover {
+    background-color: #1a3a6c;
+  }
+  .btn-cancel {
+    background-color: #dc3545;
+    color: white;
+    text-decoration: none;
+  }
+  .btn-cancel:hover {
+    background-color: #c82333;
+  }
+  .alert-error {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }
+  .password-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .password-input-group input {
+    padding-right: 40px;
+    width: 100%;
+  }
+  .toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    transition: color 0.3s;
+  }
+  .toggle-password:hover {
+    color: #2b4c7e;
+  }
+  .toggle-password ion-icon {
+    font-size: 20px;
+  }

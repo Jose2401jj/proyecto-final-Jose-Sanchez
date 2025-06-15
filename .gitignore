@@ -1,0 +1,24 @@
+# Entorno virtual
+venv/
+
+# Archivos de configuración sensibles
+.env
+client_secrets.json
+
+# Base de datos local
+db.sqlite3
+
+# Archivos temporales
+*.pyc
+__pycache__/
+*.log
+
+# Archivos de sistema/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Modelos de IA
+*.h5
+model/

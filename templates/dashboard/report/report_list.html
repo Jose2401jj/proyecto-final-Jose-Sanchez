@@ -1,0 +1,180 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard/report/report_list.css' %}">
+<main class="container-fluid">
+
+  <div class="table-header">
+    <h1 class="h3"
+        style="font-size: 28px; font-weight: bold; color: #333; border-bottom: 3px solid #2b4c7e; display: inline-block; padding-bottom: 5px;">
+      Reportes - Panel Administrativo
+    </h1>
+
+    <div class="table-controls">
+      <a href="" class="btn-add">+ Agregar Reporte</a>
+    </div>
+  </div>
+
+  <!-- Barra de búsqueda y filtro -->
+  <div class="search-container">
+    <select id="filter-type" class="search-select">
+      <option value="id">ID</option>
+      <option value="paciente">Paciente</option>
+      <option value="doctor">Doctor</option>
+      <option value="fecha">Fecha</option>
+    </select>
+    <input type="text" id="search-input" placeholder="Buscar..." class="search-input" />
+  </div>
+
+  <!-- Tabla de reportes -->
+  <div class="table-container">
+    <table class="table" id="reportes-table">
+      <thead>
+        <tr>
+          <th>ID Reporte</th>
+          <th>Paciente</th>
+          <th>Doctor</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for report in reports %}
+        <tr>
+          <td>REP-{{ report.id|stringformat:"04d" }}</td>
+          <td>{{ report.diagnostico.paciente.nombres }}  {{ report.diagnostico.paciente.apellidos }}  </td>
+          <td>{{ report.diagnostico.doctor.user.get_full_name }}</td>
+          <td>{{ report.diagnostico.fecha_diagnostico|date:"Y-m-d H:i:s" }}</td>
+         <td class="action-buttons">
+            <a href="{% url 'core:report_detail' report.id %}" class="btn-edit">Detalle Report</a>
+            {% comment %} <a href="#" class="btn-delete">Eliminar</a> {% endcomment %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Controles de paginación -->
+    <div class="pagination-controls">
+      <button id="prev-page" class="pagination-btn">&laquo; Anterior</button>
+      <span id="page-info">Página <span id="current-page">1</span> de <span id="total-pages">1</span></span>
+      <button id="next-page" class="pagination-btn">Siguiente &raquo;</button>
+    </div>
+  </div>
+
+
+
+<script>
+  // Variables de paginación
+  let currentPage = 1;
+  const rowsPerPage = 6;
+  let filteredRows = [];
+  let allRows = [];
+
+  // Función para actualizar la tabla
+  function updateTable() {
+    const table = document.getElementById("reportes-table");
+    allRows = Array.from(table.querySelectorAll("tbody tr"));
+    
+    // Primero, resetear la visibilidad de todas las filas para el filtrado
+    allRows.forEach(row => {
+      row.style.display = "";
+    });
+
+    // Aplicar el filtro actual
+    applyFilter();
+
+    // Obtener las filas filtradas
+    filteredRows = allRows.filter(row => row.style.display !== "none");
+    
+    const totalPages = Math.max(1, Math.ceil(filteredRows.length / rowsPerPage));
+    
+    // Ajustar la página actual si está fuera de rango
+    if (currentPage > totalPages) {
+      currentPage = totalPages;
+    }
+    
+    document.getElementById("total-pages").textContent = totalPages;
+    document.getElementById("current-page").textContent = currentPage;
+    
+    // Aplicar paginación
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    
+    filteredRows.forEach((row, index) => {
+      if (index >= startIndex && index < endIndex) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+    
+    // Actualizar estado de los botones
+    document.getElementById("prev-page").disabled = currentPage === 1;
+    document.getElementById("next-page").disabled = currentPage === totalPages;
+  }
+
+  // Función separada para aplicar filtros
+  function applyFilter() {
+    const input = document.getElementById("search-input").value.toLowerCase();
+    const filterType = document.getElementById("filter-type").value;
+
+    allRows.forEach((row) => {
+      let cell;
+      switch (filterType) {
+        case "id":
+          cell = row.cells[0].innerText.toLowerCase();
+          break;
+        case "paciente":
+          cell = row.cells[1].innerText.toLowerCase();
+          break;
+        case "doctor":
+          cell = row.cells[2].innerText.toLowerCase();
+          break;
+        case "fecha":
+          cell = row.cells[3].innerText.toLowerCase();
+          break;
+        default:
+          cell = "";
+      }
+
+      row.style.display = cell.includes(input) ? "" : "none";
+    });
+  }
+
+  // Event listeners para los botones de paginación
+  document.getElementById("prev-page").addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      updateTable();
+    }
+  });
+
+  document.getElementById("next-page").addEventListener("click", () => {
+    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+    if (currentPage < totalPages) {
+      currentPage++;
+      updateTable();
+    }
+  });
+
+  // Event listener para el campo de búsqueda
+  document.getElementById("search-input").addEventListener("keyup", function () {
+    currentPage = 1; // Resetear a la primera página
+    updateTable();
+  });
+
+  // Event listener para el cambio de tipo de filtro
+  document.getElementById("filter-type").addEventListener("change", function() {
+    currentPage = 1; // Resetear a la primera página
+    updateTable();
+  });
+
+  // Inicializar la tabla con paginación
+  document.addEventListener("DOMContentLoaded", () => {
+    updateTable();
+  });
+</script>
+
+{% endblock %}

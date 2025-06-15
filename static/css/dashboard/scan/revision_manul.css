@@ -1,0 +1,268 @@
+.revision-manual {
+    padding: 2rem;
+    background-color: #f8f9fa;
+  }
+
+  .main-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+  }
+
+  .patient-header {
+    background: linear-gradient(135deg, #2b4c7e 0%, #1a365d 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .patient-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .patient-details {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .status-badge.success { background-color: #28a745; }
+  .status-badge.danger { background-color: #dc3545; }
+  .status-badge.warning { background-color: #ffc107; color: #000; }
+
+  .medical-observations {
+    background-color: #f8f9fa;
+    border-left: 4px solid #2b4c7e;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .section-title {
+    color: #2b4c7e;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+  }
+
+  .result-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .images-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .image-container {
+    text-align: center;
+  }
+
+  .image-container h6 {
+    margin-bottom: 1rem;
+    color: #495057;
+  }
+
+  .medical-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .diagnosis-details {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .detail-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .label {
+    color: #6c757d;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .value {
+    color: #212529;
+  }
+
+  .confidence-badge {
+    background-color: #e9ecef;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .validation-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 2rem;
+  }
+
+  .form-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .option-group {
+    position: relative;
+  }
+
+  .option-group input[type="radio"] {
+    display: none;
+  }
+
+  .option-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .option-label.success:hover {
+    border-color: #28a745;
+    color: #28a745;
+  }
+
+  .option-label.danger:hover {
+    border-color: #dc3545;
+    color: #dc3545;
+  }
+
+  input[type="radio"]:checked + .option-label.success {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+  }
+
+  input[type="radio"]:checked + .option-label.danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: #495057;
+    font-weight: 600;
+  }
+
+  textarea.form-control {
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    resize: vertical;
+  }
+
+  textarea.form-control:focus {
+    border-color: #2b4c7e;
+    box-shadow: 0 0 0 0.2rem rgba(43, 76, 126, 0.25);
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    color: white;
+  }
+
+  .btn-primary {
+    background-color: #2b4c7e;
+    border: none;
+    color: white;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  @media (max-width: 768px) {
+    .images-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .detail-row {
+      grid-template-columns: 1fr;
+    }
+
+    .form-options {
+      grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }

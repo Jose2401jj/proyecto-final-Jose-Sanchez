@@ -1,0 +1,241 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .delete-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    
+    .delete-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+    
+    .delete-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .delete-header {
+        background: linear-gradient(45deg, #ff4b4b, #ff6b6b);
+        padding: 1.5rem;
+        color: white;
+        position: relative;
+    }
+    
+    .delete-header h3 {
+        margin: 0;
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+    
+    .delete-header i {
+        font-size: 1.8rem;
+    }
+    
+    .delete-body {
+        padding: 2rem;
+        line-height: 1.6;
+    }
+    
+    .diagnostic-details {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        border-left: 4px solid #ffc107;
+    }
+    
+    .diagnostic-details h5 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2b2b2b;
+        margin-bottom: 1.25rem;
+        letter-spacing: -0.3px;
+    }
+    
+    .diagnostic-details ul {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .diagnostic-details li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        font-size: 1.05rem;
+    }
+    
+    .diagnostic-details li:last-child {
+        border-bottom: none;
+    }
+    
+    .warning-box {
+        background: #fff3cd;
+        border: 1px solid #ffeeba;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .warning-box h5 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+    }
+    
+    .warning-box p, .warning-box ul {
+        font-size: 1.05rem;
+        line-height: 1.7;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        justify-content: flex-end;
+    }
+    
+    .btn-cancel, .btn-delete {
+        font-size: 1.05rem;
+        font-weight: 600;
+        padding: 0.85rem 1.75rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        letter-spacing: 0.3px;
+    }
+    
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+        cursor: pointer;
+    }
+    
+    .btn-cancel:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-delete:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+    }
+    
+    .detail-label {
+        color: #6c757d;
+        font-weight: 500;
+        min-width: 120px;
+        display: inline-block;
+        font-size: 1rem;
+    }
+    
+    .detail-value {
+        color: #2b2b2b;
+        font-weight: 600;
+        font-size: 1.05rem;
+    }
+    
+    .warning-icon {
+        font-size: 2.5rem;
+        color: #ff4b4b;
+        margin-right: 1.25rem;
+        vertical-align: middle;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+</style>
+
+<div class="delete-container">
+    <div class="delete-card">
+        <div class="delete-header">
+            <h3>
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Confirmar Eliminación de Diagnóstico
+            </h3>
+        </div>
+        
+        <div class="delete-body">
+            <div class="diagnostic-details">
+                <h5 class="mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Detalles del Diagnóstico
+                </h5>
+                <ul class="list-unstyled">
+                    <li>
+                        <span class="detail-label">ID:</span>
+                        <span class="detail-value">SCAN-{{ object.id|stringformat:"04d" }}</span>
+                    </li>
+                    <li>
+                        <span class="detail-label">Paciente:</span>
+                        <span class="detail-value">{{ object.paciente.nombres }} {{ object.paciente.apellidos }}</span>
+                    </li>
+                    <li>
+                        <span class="detail-label">Fecha:</span>
+                        <span class="detail-value">{{ object.fecha_diagnostico|date:"d/m/Y H:i" }}</span>
+                    </li>
+                    <li>
+                        <span class="detail-label">Doctor:</span>
+                        <span class="detail-value">{{ object.doctor.user.first_name }} {{ object.doctor.user.last_name }}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-circle warning-icon"></i>
+                    <div>
+                        <h5 class="mb-2" style="color: #dc3545;">¡Atención! Acción Irreversible</h5>
+                        <p class="mb-0">
+                            Esta acción eliminará permanentemente el diagnóstico y todos sus archivos asociados:
+                        </p>
+                        <ul class="mt-2 mb-0">
+                            <li>Imágenes originales</li>
+                            <li>Imágenes procesadas</li>
+                            <li>Informes generados</li>
+                            <li>Resultados del análisis</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="btn-group">
+                    <a href="{% url 'core:scan_list' %}" class="btn-cancel">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn-delete">
+                        <i class="fas fa-trash"></i>
+                        Confirmar Eliminación
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

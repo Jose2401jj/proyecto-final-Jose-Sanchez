@@ -1,0 +1,35 @@
+{% extends "components/base.html" %}
+{% load static %}
+
+{% block content %}
+  <h1>Eliminar Paciente: {{ paciente.nombre }}</h1>
+
+  <form id="deleteForm" method="post" action="{% url 'core:pacient_delete' paciente.id %}">
+    {% csrf_token %}
+    <p>¿Estás seguro que deseas eliminar a este paciente? Esta acción no se puede deshacer.</p>
+    <button type="button" onclick="confirmDelete(event)" class="btn btn-danger">Eliminar Paciente</button>
+    <a href="{% url 'core:pacient_list' %}" class="btn btn-secondary">Cancelar</a>
+  </form>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    function confirmDelete(event) {
+      event.preventDefault();
+
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esta acción no se puede deshacer.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById('deleteForm').submit();
+        }
+      });
+    }
+  </script>
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard/doctor/doctor_list.css' %}">
+<main class="container-fluid">
+  <div class="dashboard-header">
+    <div class="header-title">
+      <h1 class="h3">Doctores - Panel Administrativo</h1>
+    </div>
+    <div class="header-actions">
+      <a href="{% url 'core:doctor_create' %}" class="btn-create-doctor">
+        <i class="fas fa-user-md"></i>
+        Crear Doctor
+      </a>
+    </div>
+  </div>
+
+  <!-- Barra de búsqueda y filtro -->
+  <div class="search-container">
+    <select id="filter-type" class="search-select">
+      <option value="nombre">Nombre</option>
+      <option value="especialidad">Especialidad</option>
+      <option value="licencia">Número de Licencia</option>
+      <option value="email">Email</option>
+    </select>
+    <input type="text" id="search-input" placeholder="Buscar..." class="search-input" />
+  </div>
+
+  <!-- Tabla de doctores -->
+  <div class="table-container">
+    <table class="table" id="doctores-table">
+      <thead>
+        <tr>
+          <th>Foto</th>
+          <th>Nombre</th>
+          <th>Especialidad</th>
+          <th>Contacto</th>
+          <th>Estadísticas</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doctor in doctores %}
+        <tr>
+          <td>
+            <div class="doctor-avatar">
+              {% if doctor.imagen_perfil %}
+                <img src="{{ doctor.imagen_perfil.url }}" alt="Foto de perfil">
+              {% else %}
+                <img src="{% static 'images/customer01.jpg' %}" alt="Foto por defecto">
+              {% endif %}
+            </div>
+          </td>
+          <td>
+            <div class="doctor-info">
+              <h5 class="doctor-name">Dr. {{ doctor.user.get_full_name }}</h5>
+              <span class="doctor-email">{{ doctor.user.email }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="specialty-badge">{{ doctor.especialidad }}</span>
+            {% if doctor.numero_licencia %}
+              <small class="license-number">Lic. {{ doctor.numero_licencia }}</small>
+            {% endif %}
+          </td>
+          <td>
+            <div class="contact-info">
+              {% if doctor.contacto %}
+                <span><i class="fas fa-phone"></i> {{ doctor.contacto }}</span>
+              {% endif %}
+            </div>
+          </td>
+          <td>
+            <div class="stats-container">
+              <div class="stat-item">
+                <i class="fas fa-user-injured"></i>
+                <span>{{ doctor.stats.total_pacientes }} pacientes</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-file-medical"></i>
+                <span>{{ doctor.stats.total_diagnosticos }} diagnósticos</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-chart-line"></i>
+                <span>{{ doctor.stats.precision }}% precisión</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="status-badge {% if doctor.user.is_active %}active{% else %}inactive{% endif %}">
+              {{ doctor.user.is_active|yesno:"Activo,Inactivo" }}
+            </span>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center">No hay doctores registrados</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Controles de paginación -->
+    {% if is_paginated %}
+    <div class="pagination-controls">
+      {% if page_obj.has_previous %}
+        <a href="?page=1" class="pagination-btn">&laquo; Primera</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">Anterior</a>
+      {% else %}
+        <button class="pagination-btn" disabled>&laquo; Primera</button>
+        <button class="pagination-btn" disabled>Anterior</button>
+      {% endif %}
+
+      <span id="page-info">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+      </span>
+
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-btn">Última &raquo;</a>
+      {% else %}
+        <button class="pagination-btn" disabled>Siguiente</button>
+        <button class="pagination-btn" disabled>Última &raquo;</button>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</main>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('search-input');
+  const filterType = document.getElementById('filter-type');
+  
+  // Establecer valores iniciales desde la URL
+  const urlParams = new URLSearchParams(window.location.search);
+  searchInput.value = urlParams.get('search') || '';
+  filterType.value = urlParams.get('filter_type') || 'nombre';
+
+  function updateSearch() {
+    const searchQuery = searchInput.value;
+    const filterValue = filterType.value;
+    
+    // Construir la URL con los parámetros de búsqueda
+    let url = window.location.pathname;
+    const params = new URLSearchParams(window.location.search);
+    
+    if (searchQuery) {
+      params.set('search', searchQuery);
+      params.set('filter_type', filterValue);
+    } else {
+      params.delete('search');
+      params.delete('filter_type');
+    }
+    
+    // Mantener el número de página si existe
+    const page = params.get('page');
+    if (page) {
+      params.set('page', '1'); // Resetear a la primera página al buscar
+    }
+    
+    // Redirigir a la nueva URL
+    window.location.href = url + (params.toString() ? '?' + params.toString() : '');
+  }
+
+  // Debounce para evitar demasiadas redirecciones
+  let timeout = null;
+  searchInput.addEventListener('keyup', function() {
+    clearTimeout(timeout);
+    timeout = setTimeout(updateSearch, 500);
+  });
+
+  filterType.addEventListener('change', updateSearch);
+});
+</script>
+{% endblock %}
+
+{% endblock %} 

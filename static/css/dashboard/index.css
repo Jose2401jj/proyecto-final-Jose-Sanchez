@@ -1,0 +1,321 @@
+.status {
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .status.completed {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+  }
+
+  .status.pending {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: #000;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+  }
+
+  .status.review {
+    background: linear-gradient(135deg, #17a2b8, #6f42c1);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: currentColor;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+
+  /* Mejoras para las tablas */
+  .details {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    margin-top: 30px;
+  }
+
+  .recentOrders, .recentCustomers {
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .recentOrders:hover, .recentCustomers:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  }
+
+  .cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f8f9fa;
+  }
+
+  .cardHeader h2 {
+    color: #2c3e50;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    background: #035eb9e1;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+
+  /* Tabla de escaneos mejorada */
+  .scan-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  .scan-table thead tr {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  }
+
+  .scan-table thead th {
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 700;
+    color: #495057;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  .scan-table tbody tr {
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #f1f3f4;
+  }
+
+  .scan-table tbody tr:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .scan-table tbody tr:hover td {
+    color: #ffffff !important;
+  }
+
+  .scan-table tbody tr:hover .scan-id {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+
+  .scan-table tbody tr:hover .patient-name {
+    color: #ffffff;
+  }
+
+  .scan-table tbody tr:hover .scan-type {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+
+  .scan-table tbody td {
+    padding: 15px 12px;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #495057;
+  }
+
+  .scan-id {
+    font-weight: 700;
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+    padding: 5px 10px;
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  .patient-name {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .scan-type {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Tabla de pacientes mejorada */
+  .patient-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  .patient-row {
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #f1f3f4;
+    padding: 15px 0;
+  }
+
+  .patient-row:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+
+  .patient-row:hover td {
+    color: #ffffff !important;
+  }
+
+  .patient-row:hover .patient-info h4 {
+    color: #ffffff !important;
+  }
+
+  .patient-row:hover .patient-info span {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff !important;
+  }
+
+  .patient-row td {
+    padding: 15px 10px;
+    vertical-align: middle;
+  }
+
+  .patient-avatar {
+    position: relative;
+  }
+
+  .imgBx {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .patient-row:hover .imgBx {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  .imgBx img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+  }
+
+  .patient-info h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 5px;
+  }
+
+  .patient-info span {
+    color: #6c757d;
+    font-size: 13px;
+    background: #f8f9fa;
+    padding: 3px 8px;
+    border-radius: 10px;
+    display: inline-block;
+  }
+
+  /* Estado vacío mejorado */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+    font-style: italic;
+  }
+
+  .empty-state::before {
+    content: "📋";
+    font-size: 48px;
+    display: block;
+    margin-bottom: 15px;
+    opacity: 0.5;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .details {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    
+    .scan-table, .patient-table {
+      font-size: 12px;
+    }
+    
+    .scan-table th, .scan-table td {
+      padding: 10px 8px;
+    }
+    
+    .cardHeader h2 {
+      font-size: 20px;
+    }
+  }
+
+  /* Animaciones adicionales */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .recentOrders, .recentCustomers {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  .recentCustomers {
+    animation-delay: 0.2s;
+  }

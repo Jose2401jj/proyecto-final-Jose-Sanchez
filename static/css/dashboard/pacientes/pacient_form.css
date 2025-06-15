@@ -1,0 +1,39 @@
+.form-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  .full-width {
+    grid-column: 1 / -1;
+  }
+  .btn-save, .btn-cancel {
+    padding: 10px 20px;
+    margin: 10px 10px 0 0;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .btn-save {
+    background-color: #007bff;
+    color: white;
+  }
+  .btn-cancel {
+    background-color: #dc3545;
+    color: white;
+    text-decoration: none;
+  }
+  .alert-error {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }

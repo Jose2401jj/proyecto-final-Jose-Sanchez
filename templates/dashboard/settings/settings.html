@@ -1,0 +1,680 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard/settings/settings.css' %}">
+
+<div class="settings-container">
+    <!-- Encabezado de la página -->
+    <div class="page-header">
+        <h1>Configuración del Sistema</h1>
+        <p>Gestiona tus preferencias y configuraciones personales</p>
+    </div>
+
+    <!-- Contenedor principal de configuraciones -->
+    <div class="settings-wrapper">
+        <!-- Menú lateral -->
+        <div class="settings-sidebar">
+            <ul class="settings-nav">
+                <li class="active" data-tab="profile">
+                    <ion-icon name="person-outline"></ion-icon>
+                    <span>Perfil</span>
+                </li>
+                <li data-tab="account">
+                    <ion-icon name="shield-outline"></ion-icon>
+                    <span>Cuenta</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Contenido de las configuraciones -->
+        <div class="settings-content">
+            <!-- Sección Perfil -->
+            <div class="settings-tab active" id="profile">
+                <div class="settings-header">
+                    <h2>Perfil del Usuario</h2>
+                    <p>Actualiza tu información personal y profesional</p>
+                </div>
+
+                <div class="settings-card">
+                    <div class="profile-image-section">
+                        <div class="profile-image" id="profileImageContainer">
+                            {% if doctor_info.profile_image %}
+                                <img src="{{ doctor_info.profile_image }}" alt="Foto de perfil" id="profileImage" onerror="this.src='{% static 'images/customer01.jpg' %}'">
+                            {% else %}
+                                <img src="{% static 'images/customer01.jpg' %}" alt="Foto de perfil por defecto" id="profileImage">
+                            {% endif %}
+                            <button class="change-photo" id="changePhotoBtn" type="button" aria-label="Cambiar foto de perfil">
+                                <ion-icon name="camera-outline"></ion-icon>
+                                <span class="loading-spinner" style="display: none;"></span>
+                            </button>
+                        </div>
+                        <h3>{{ user_info.full_name }}</h3>
+                        <span class="user-role">{{ doctor_info.specialty }}</span>
+                    </div>
+
+                    <form class="settings-form" id="profileForm">
+                        <div class="form-group">
+                            <label>Nombre Completo</label>
+                            <div class="form-row">
+                                <input type="text" name="first_name" value="{{ user_info.first_name }}" class="form-control" placeholder="Nombres">
+                                <input type="text" name="last_name" value="{{ user_info.last_name }}" class="form-control" placeholder="Apellidos">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Correo Electrónico</label>
+                                <input type="email" name="email" value="{{ user_info.email }}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono</label>
+                                <input type="tel" name="contact" value="{{ doctor_info.contact }}" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Especialidad</label>
+                                <input type="text" name="specialty" value="{{ doctor_info.specialty }}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Número de Licencia</label>
+                                <input type="text" name="license_number" value="{{ doctor_info.license_number }}" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Biografía</label>
+                            <textarea name="biography" class="form-control" rows="4">{{ doctor_info.biography }}</textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Estadísticas del Usuario</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <ion-icon name="document-text-outline"></ion-icon>
+                            <div class="stat-info">
+                                <span class="stat-value">{{ statistics.total_diagnosticos }}</span>
+                                <span class="stat-label">Diagnósticos</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <ion-icon name="people-outline"></ion-icon>
+                            <div class="stat-info">
+                                <span class="stat-value">{{ statistics.total_pacientes }}</span>
+                                <span class="stat-label">Pacientes</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <ion-icon name="trending-up-outline"></ion-icon>
+                            <div class="stat-info">
+                                <span class="stat-value">{{ statistics.precision }}%</span>
+                                <span class="stat-label">Precisión</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección Cuenta -->
+            <div class="settings-tab" id="account">
+                <div class="settings-header">
+                    <h2>Seguridad de la Cuenta</h2>
+                    <p>Gestiona tu contraseña y seguridad</p>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Cambiar Contraseña</h3>
+                    <form class="settings-form" id="passwordForm">
+                        <div class="form-group">
+                            <label>Contraseña Actual</label>
+                            <div class="password-input-group">
+                                <input type="password" name="current_password" class="form-control">
+                                <button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+                                    <ion-icon name="eye-outline"></ion-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nueva Contraseña</label>
+                                <div class="password-input-group">
+                                    <input type="password" name="new_password" class="form-control">
+                                    <button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+                                        <ion-icon name="eye-outline"></ion-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirmar Contraseña</label>
+                                <div class="password-input-group">
+                                    <input type="password" name="confirm_password" class="form-control">
+                                    <button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+                                        <ion-icon name="eye-outline"></ion-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Actualizar Contraseña</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="settings-card">
+                    <h3>Cuentas Vinculadas</h3>
+                    <div class="linked-accounts">
+                        <div class="linked-account-item">
+                            <div class="account-info">
+                                <img src="{% static 'images/google.png' %}" alt="Google" class="account-icon">
+                                <div class="account-details">
+                                    <h4>Cuenta de Google</h4>
+                                    <p>{% if doctor_info.google_account %}{{ doctor_info.google_account }}{% else %}No vinculada{% endif %}</p>
+                                </div>
+                            </div>
+                            <a href="{% url 'core:google_auth' %}" class="btn-link {% if doctor_info.google_account %}btn-unlink{% endif %}" id="googleLinkBtn">
+                                {% if doctor_info.google_account %}
+                                    Desvincular
+                                {% else %}
+                                    Vincular cuenta
+                                {% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección Notificaciones -->
+            <div class="settings-tab" id="notifications">
+                <div class="settings-header">
+                    <h2>Preferencias de Notificaciones</h2>
+                    <p>Configura cómo quieres recibir las notificaciones</p>
+                </div>
+
+                <div class="settings-card">
+                    <form class="settings-form" id="notificationsForm">
+                        <div class="setting-item toggle">
+                            <span>Notificaciones por Correo</span>
+                            <label class="switch">
+                                <input type="checkbox" name="email_notifications" {% if doctor_info.email_notifications %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item toggle">
+                            <span>Notificaciones Push</span>
+                            <label class="switch">
+                                <input type="checkbox" name="push_notifications" {% if doctor_info.push_notifications %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item toggle">
+                            <span>Sonidos de Notificación</span>
+                            <label class="switch">
+                                <input type="checkbox" name="sound_notifications" {% if doctor_info.sound_notifications %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Guardar Preferencias</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sección Apariencia -->
+            <div class="settings-tab" id="appearance">
+                <div class="settings-header">
+                    <h2>Personalización</h2>
+                    <p>Personaliza la apariencia de la aplicación</p>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Tema</h3>
+                    <form class="settings-form" id="appearanceForm">
+                        <div class="theme-options">
+                            {% for theme in settings.appearance.themes %}
+                            <div class="theme-option {% if theme.value == doctor_info.theme %}active{% endif %}" data-theme="{{ theme.value }}">
+                                <div class="theme-preview {{ theme.value }}"></div>
+                                <span>{{ theme.label }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <h3>Color Principal</h3>
+                        <div class="color-options">
+                            {% for color in settings.appearance.colors %}
+                            <div class="color-option {% if color.value == doctor_info.primary_color %}active{% endif %}" 
+                                 style="background: {{ color.value }};"
+                                 data-color="{{ color.value }}">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Guardar Apariencia</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sección Sistema -->
+            <div class="settings-tab" id="system">
+                <div class="settings-header">
+                    <h2>Configuración del Sistema</h2>
+                    <p>Ajusta el rendimiento y funcionamiento del sistema</p>
+                </div>
+
+                <div class="settings-card">
+                    <form class="settings-form" id="systemForm">
+                        <div class="setting-item toggle">
+                            <span>Animaciones</span>
+                            <label class="switch">
+                                <input type="checkbox" name="animations" {% if doctor_info.animations %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Calidad de Imagen</label>
+                            <select name="image_quality" class="form-control">
+                                {% for quality in settings.image_quality_options %}
+                                <option value="{{ quality.value }}" {% if quality.value == doctor_info.image_quality %}selected{% endif %}>
+                                    {{ quality.label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Guardar Configuración</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Additional CSS for loading state and image handling */
+.profile-image {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.change-photo {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #2b4c7e;
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.change-photo:hover {
+    background: #1a3c5e;
+}
+
+.loading-spinner {
+    border: 2px solid #fff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.notification {
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 200px;
+}
+
+.notification.success {
+    border-left: 4px solid #28a745;
+}
+
+.notification.error {
+    border-left: 4px solid #dc3545;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.notification.fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Navegación entre pestañas
+    const navItems = document.querySelectorAll('.settings-nav li');
+    const tabs = document.querySelectorAll('.settings-tab');
+
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            
+            // Actualizar navegación
+            navItems.forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Mostrar tab correspondiente
+            tabs.forEach(tab => {
+                if (tab.id === tabId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+        });
+    });
+
+    // Manejar cambio de foto de perfil
+    const changePhotoBtn = document.getElementById('changePhotoBtn');
+    const profileImage = document.getElementById('profileImage');
+    if (changePhotoBtn && profileImage) {
+        changePhotoBtn.addEventListener('click', function() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/jpeg,image/png';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Show loading state
+                    const spinner = changePhotoBtn.querySelector('.loading-spinner');
+                    const icon = changePhotoBtn.querySelector('ion-icon');
+                    spinner.style.display = 'inline-block';
+                    icon.style.display = 'none';
+                    changePhotoBtn.disabled = true;
+
+                    const formData = new FormData();
+                    formData.append('profile_image', file);
+                    
+                    fetch('{% url "core:update_profile_image" %}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Hide loading state
+                        spinner.style.display = 'none';
+                        icon.style.display = 'inline-block';
+                        changePhotoBtn.disabled = false;
+
+                        if (data.status === 'success') {
+                            profileImage.src = data.image_url + '?t=' + new Date().getTime(); // Add timestamp to prevent caching
+                            showNotification('success', data.message);
+                        } else {
+                            showNotification('error', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        // Hide loading state
+                        spinner.style.display = 'none';
+                        icon.style.display = 'inline-block';
+                        changePhotoBtn.disabled = false;
+                        showNotification('error', 'Error al actualizar la imagen');
+                    });
+                }
+            };
+            
+            input.click();
+        });
+    }
+
+    // Manejar envío de formularios
+    const forms = {
+        'profileForm': '{% url "core:update_profile" %}',
+        'passwordForm': '{% url "core:update_password" %}',
+        'notificationsForm': '{% url "core:update_notifications" %}',
+        'appearanceForm': '{% url "core:update_appearance" %}',
+        'systemForm': '{% url "core:update_system_settings" %}'
+    };
+
+    Object.entries(forms).forEach(([formId, url]) => {
+        const form = document.getElementById(formId);
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(form);
+                const data = {};
+                formData.forEach((value, key) => {
+                    if (value instanceof File && !value.name) return; // Skip empty files
+                    data[key] = value;
+                });
+
+                // For appearance form, ensure theme and color are included
+                if (formId === 'appearanceForm') {
+                    const activeTheme = document.querySelector('.theme-option.active');
+                    const activeColor = document.querySelector('.color-option.active');
+                    if (activeTheme) data.theme = activeTheme.dataset.theme;
+                    if (activeColor) data.primary_color = activeColor.dataset.color;
+                }
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showNotification('success', data.message);
+                    } else {
+                        showNotification('error', data.message);
+                    }
+                })
+                .catch(error => {
+                    showNotification('error', 'Error al guardar los cambios');
+                });
+            });
+        }
+    });
+
+    // Funciones auxiliares
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function showNotification(type, message) {
+        const notificationContainer = document.getElementById('notification-container') || createNotificationContainer();
+        
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <ion-icon name="${type === 'success' ? 'checkmark-circle' : 'alert-circle'}"></ion-icon>
+                <span>${message}</span>
+            </div>
+            <button class="notification-close">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        `;
+        
+        notificationContainer.appendChild(notification);
+        
+        // Auto-cerrar después de 5 segundos
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                notification.remove();
+                if (notificationContainer.children.length === 0) {
+                    notificationContainer.remove();
+                }
+            }, 300);
+        }, 5000);
+        
+        // Manejar cierre manual
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                notification.remove();
+                if (notificationContainer.children.length === 0) {
+                    notificationContainer.remove();
+                }
+            }, 300);
+        });
+    }
+
+    function createNotificationContainer() {
+        const container = document.createElement('div');
+        container.id = 'notification-container';
+        container.className = 'notification-container';
+        document.body.appendChild(container);
+        return container;
+    }
+
+    // Manejar vinculación de cuenta de Google
+    const googleLinkBtn = document.getElementById('googleLinkBtn');
+    if (googleLinkBtn) {
+        googleLinkBtn.addEventListener('click', function(e) {
+            const isLinked = this.classList.contains('btn-unlink');
+            
+            if (isLinked) {
+                // Prevenir la navegación para desvincular
+                e.preventDefault();
+                
+                // Desvincular cuenta
+                fetch('{% url "core:unlink_google" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        this.classList.remove('btn-unlink');
+                        this.textContent = 'Vincular cuenta';
+                        document.querySelector('.account-details p').textContent = 'No vinculada';
+                        this.href = '{% url "core:google_auth" %}';
+                        showNotification('success', 'Cuenta de Google desvinculada exitosamente');
+                    } else {
+                        showNotification('error', data.message);
+                    }
+                })
+                .catch(error => {
+                    showNotification('error', 'Error al desvincular la cuenta');
+                });
+            }
+            // Si no está vinculada, permitir que el enlace funcione normalmente
+        });
+
+        // Verificar estado de vinculación al cargar la página
+        const urlParams = new URLSearchParams(window.location.search);
+        const successMessage = urlParams.get('google_success');
+        if (successMessage) {
+            // Actualizar la UI después de una vinculación exitosa
+            const accountEmail = '{{ doctor_info.google_account }}';
+            if (accountEmail) {
+                googleLinkBtn.classList.add('btn-unlink');
+                googleLinkBtn.textContent = 'Desvincular';
+                document.querySelector('.account-details p').textContent = accountEmail;
+                showNotification('success', 'Cuenta de Google vinculada correctamente');
+                
+                // Limpiar el parámetro de la URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+    }
+
+    // Funcionalidad para mostrar/ocultar contraseña
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.parentElement.querySelector('input');
+            const icon = this.querySelector('ion-icon');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('name', 'eye-off-outline');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('name', 'eye-outline');
+            }
+        });
+    });
+
+    // Manejar selección de tema
+    document.querySelectorAll('.theme-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Manejar selección de color
+    document.querySelectorAll('.color-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+});
+</script>
+{% endblock %}

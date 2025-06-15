@@ -1,0 +1,132 @@
+{% extends 'components/base.html' %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/dashboard/index.css' %}">
+<div class="cardBox">
+  <div class="card">
+    <div>
+      <div class="numbers">{{ total_escaneos }}</div>
+      <div class="cardName">Escaneos Totales</div>
+    </div>
+    <div class="iconBx">
+      <ion-icon name="scan-outline"></ion-icon>
+    </div>
+  </div>
+
+  <div class="card">
+    <div>
+      <div class="numbers">{{ total_pacientes }}</div>
+      <div class="cardName">Pacientes</div>
+    </div>
+    <div class="iconBx">
+      <ion-icon name="people-outline"></ion-icon>
+    </div>
+  </div>
+
+  <div class="card">
+    <div>
+      <div class="numbers">{{ pendientes }}</div>
+      <div class="cardName">Pendientes</div>
+    </div>
+    <div class="iconBx">
+      <ion-icon name="time-outline"></ion-icon>
+    </div>
+  </div>
+
+  <div class="card">
+    <div>
+      <div class="numbers">98%</div>
+      <div class="cardName">Precisión</div>
+    </div>
+    <div class="iconBx">
+      <ion-icon name="analytics-outline"></ion-icon>
+    </div>
+  </div>
+</div>
+
+<div class="details">
+  <div class="recentOrders">
+    <div class="cardHeader">
+      <h2 style="color: #035eb9;">Escaneos Recientes</h2>
+      <a href="{% url 'core:scan_list' %}" class="btn">Ver Todos</a>
+    </div>
+    <table class="scan-table">
+      <thead>
+        <tr>
+          <th>ID Escaneo</th>
+          <th>Paciente</th>
+          
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for escaneo in escaneos_recientes %}
+        <tr>
+          <td><span class="scan-id">#{{ escaneo.id }}</span></td>  
+          <td><span class="patient-name">{{ escaneo.paciente.nombres.upper }} {{ escaneo.paciente.apellidos.upper }}</span></td>
+          
+          <td>
+            {% if escaneo.estado == 'validado' %}
+            <span class="status completed">
+              <span class="status-dot"></span>
+              Completado
+            </span>
+            {% elif escaneo.estado == 'Pendiente' %}
+            <span class="status pending">
+              <span class="status-dot"></span>
+              En Proceso
+            </span>
+            {% elif escaneo.estado == 'rechazado' %}
+            <span class="status review">
+              <span class="status-dot"></span>
+              En Revisión
+            </span>
+            {% else %}
+            <span class="status">
+              <span class="status-dot"></span>
+              {{ escaneo.estado }}
+            </span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="empty-state">No hay escaneos recientes.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="recentCustomers">
+    <div class="cardHeader">
+      <h2>Pacientes Recientes</h2>
+    </div>
+
+    <table class="patient-table">
+      {% for paciente in pacientes %}
+      <tr class="patient-row">
+        <td class="patient-avatar">
+          <div class="imgBx">
+            {% if paciente.imagen %}
+            <img src="{{ paciente.imagen.url }}" alt="Foto de {{ paciente.nombres }}">
+            {% else %}
+            <img src="{% static 'images/customer01.jpg' %}" alt="Avatar por defecto">
+            {% endif %}
+          </div>
+        </td>
+        <td class="patient-info">
+          <h4>{{ paciente.nombres.upper }} {{ paciente.apellidos.upper }}</h4>
+          <span>Último escaneo: 2024-01-01</span>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="2" class="empty-state">No hay pacientes recientes.</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+
+{% endblock %}

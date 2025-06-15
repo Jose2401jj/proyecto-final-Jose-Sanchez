@@ -1,0 +1,140 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard/doctor/doctor_form.css' %}">
+
+
+<main class="container-fluid">
+  <div class="form-container">
+    <div class="card shadow-lg border-0">
+      <div class="card-header bg-primary text-white text-center">
+        <h2 class="mb-0">Crear Cuenta de Doctor</h2>
+      </div>
+      <div class="card-body">
+        <form method="POST" id="doctor-form">
+          {% csrf_token %}
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="id_username">Nombre de Usuario</label>
+              {{ form.username }}
+              {% for error in form.username.errors %}
+              <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_first_name">Nombres</label>
+              {{ form.first_name }}
+              {% for error in form.first_name.errors %}
+              <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_last_name">Apellidos</label>
+              {{ form.last_name }}
+              {% for error in form.last_name.errors %}
+              <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_email">Correo Electrónico</label>
+              {{ form.email }}
+              {% for error in form.email.errors %}
+              <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_especialidad">Especialidad</label>
+              {{ form.especialidad }}
+              {% for error in form.especialidad.errors %}
+              <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_numero_licencia">Número de Licencia</label>
+              {{ form.numero_licencia }}
+              {% for error in form.numero_licencia.errors %}
+              <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_contacto">Teléfono de Contacto</label>
+              {{ form.contacto }}
+              {% for error in form.contacto.errors %}
+              <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_password1">Contraseña</label>
+              <div class="password-input-group">
+                {{ form.password1 }}
+                <button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+                  <ion-icon name="eye-outline"></ion-icon>
+                </button>
+              </div>
+              {% for error in form.password1.errors %}
+              <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_password2">Confirmar Contraseña</label>
+              <div class="password-input-group">
+                {{ form.password2 }}
+                <button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+                  <ion-icon name="eye-outline"></ion-icon>
+                </button>
+              </div>
+              {% for error in form.password2.errors %}
+              <div class="alert-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="id_biografia">Biografía</label>
+            {{ form.biografia }}
+            {% for error in form.biografia.errors %}
+            <div class="alert-error">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="form-buttons">
+            <button type="submit" class="btn-save">Crear Cuenta</button>
+            <a href="{% url 'core:doctor_list' %}" class="btn-cancel">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Funcionalidad para mostrar/ocultar contraseña
+    document.querySelectorAll('.toggle-password').forEach(button => {
+      button.addEventListener('click', function () {
+        const input = this.parentElement.querySelector('input');
+        const icon = this.querySelector('ion-icon');
+
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.setAttribute('name', 'eye-off-outline');
+        } else {
+          input.type = 'password';
+          icon.setAttribute('name', 'eye-outline');
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

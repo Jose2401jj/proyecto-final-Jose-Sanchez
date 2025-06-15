@@ -1,0 +1,486 @@
+{% extends 'components/base.html' %}
+{% load static %}
+{% load json_filters %}
+
+{% block title %}Estadísticas{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard/statistic/statistics.css' %}">
+
+<div class="statistics-page">
+    <div class="containers">
+        <div class="content-wrapper">
+            <h1>Estadísticas del Sistema</h1>
+
+            <div class="charts-section">
+            
+                <div class="chart-container">
+                    <div class="distribution-chart">
+                        <div class="chart-header">
+                            <h2 class="chart-title">Diagnósticos Diarios (Mes Actual)</h2>
+                        </div>
+                        <div id="daily-chart"></div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Tipos de Neumonía -->
+                <div class="chart-container">
+                    <div class="distribution-chart">
+                        <div class="chart-header">
+                            <h2 class="chart-title">Distribución de Tipos de Neumonía</h2>
+                        </div>
+                        <div id="type-distribution-chart"></div>
+                        <div class="distribution-legend" id="type-distribution-legend">
+                            <!-- La leyenda se generará dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Precisión -->
+                <div class="chart-container full-width">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Precisión del Diagnóstico {{ now.year }}</h2>
+                    </div>
+                    <div id="accuracy-chart"></div>
+                    <div class="accuracy-legend">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #2ecc71"></span>
+                            <span class="legend-text">Precisión</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #3498db"></span>
+                            <span class="legend-text">Total Diagnósticos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Tarjetas de Resumen -->
+            <div class="summary-cards">
+            
+                <div class="summary-card">
+                    <div class="icon" style="background: linear-gradient(135deg, #6f42c1, #8e44ad);">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <p>Diagnósticos este Mes</p>
+                    <h3>{{ total_mes_actual }}</h3>
+                    <div class="trend up">
+                        <i class="fas fa-chart-line"></i>
+                        Promedio: {{ promedio_diario }} por día
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="icon" style="background: linear-gradient(135deg, #2196F3, #3498db);">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <p>Total Diagnósticos</p>
+                    <h3>{{ total_diagnosticos }}</h3>
+                    <div class="trend {% if variacion_promedio >= 0 %}up{% else %}down{% endif %}">
+                        <i class="fas fa-{% if variacion_promedio >= 0 %}arrow-up{% else %}arrow-down{% endif %}"></i>
+                        {% with var_abs=variacion_promedio|abs_value %}
+                            {{ var_abs }}% vs mes anterior
+                        {% endwith %}
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="icon" style="background: linear-gradient(135deg, #4CAF50, #2ecc71);">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <p>Casos de Neumonía</p>
+                    <h3>{{ total_neumonia }}%</h3>
+                    <div class="trend up">
+                        <i class="fas fa-chart-bar"></i>
+                        Del total de casos
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="icon" style="background: linear-gradient(135deg, #FF9800, #f39c12);">
+                        <i class="fas fa-check-double"></i>
+                    </div>
+                    <p>Diagnósticos Validados</p>
+                    <h3>{{ porcentaje_validados }}%</h3>
+                    <div class="trend up">
+                        <i class="fas fa-check"></i>
+                        Tasa de validación
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
+<script>
+    // Datos del backend
+    const monthlyData = {{ monthly_data|json_encode|safe }};
+    const typeData = {{ type_data|json_encode|safe }};
+    const accuracyData = {{ accuracy_data|json_encode|safe }};
+    const dailyData = {{ daily_data|json_encode|safe }};
+
+    // Colores para los tipos de neumonía
+    const typeColors = {
+        'Normal': '#3498db',
+        'Viral': '#2ecc71',
+        'Bacteriana': '#e74c3c',
+        'Otros': '#f1c40f'
+    };
+
+    // Configuración global de Chart.js
+    Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+    Chart.defaults.color = '#7f8c8d';
+    Chart.defaults.plugins.legend.display = true;
+    Chart.defaults.plugins.legend.position = 'bottom';
+    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+    Chart.defaults.plugins.legend.labels.padding = 15;
+
+    // Función para actualizar la leyenda del gráfico de tipos
+    function updateTypeLegend(data) {
+        const legendContainer = document.getElementById('type-distribution-legend');
+        legendContainer.innerHTML = '';
+
+        // Calcular el total para los porcentajes
+        const total = data.reduce((sum, d) => sum + d.count, 0);
+
+        data.forEach(item => {
+            const percentage = ((item.count / total) * 100).toFixed(1);
+            const legendItem = document.createElement('div');
+            legendItem.className = 'legend-item';
+            legendItem.innerHTML = `
+                <span class="legend-color" style="background: ${typeColors[item.type]}"></span>
+                <span class="legend-text">${item.type}</span>
+                <span class="legend-value">${percentage}% (${item.count})</span>
+            `;
+            legendContainer.appendChild(legendItem);
+        });
+    }
+
+    // Función para crear el gráfico de distribución de tipos (Donut profesional)
+    function createTypeDistributionChart() {
+        const container = document.getElementById('type-distribution-chart');
+        
+        // Crear canvas si no existe
+        let canvas = container.querySelector('canvas');
+        if (!canvas) {
+            canvas = document.createElement('canvas');
+            canvas.id = 'typeChart';
+            canvas.style.maxHeight = '300px';
+            container.appendChild(canvas);
+        }
+
+        const ctx = canvas.getContext('2d');
+
+        // Preparar datos para Chart.js
+        const chartData = {
+            labels: typeData.map(d => d.type),
+            datasets: [{
+                data: typeData.map(d => d.count),
+                backgroundColor: typeData.map(d => typeColors[d.type] + 'CC'), // Agregar transparencia
+                borderColor: typeData.map(d => typeColors[d.type]),
+                borderWidth: 3,
+                hoverOffset: 15,
+                hoverBorderWidth: 4
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        display: false // Usamos nuestra propia leyenda
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    duration: 1500
+                }
+            }
+        });
+
+        // Actualizar la leyenda personalizada
+        updateTypeLegend(typeData);
+    }
+
+    // Función para crear el gráfico de diagnósticos diarios (Área suave)
+    function createDailyChart() {
+        const container = document.getElementById('daily-chart');
+        
+        // Crear canvas si no existe
+        let canvas = container.querySelector('canvas');
+        if (!canvas) {
+            canvas = document.createElement('canvas');
+            canvas.id = 'dailyChart';
+            canvas.style.maxHeight = '350px';
+            container.appendChild(canvas);
+        }
+
+        const ctx = canvas.getContext('2d');
+
+        // Preparar datos
+        const chartData = {
+            labels: dailyData.map(d => `Día ${d.day}`),
+            datasets: [{
+                label: 'Diagnósticos',
+                data: dailyData.map(d => d.count),
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                borderColor: 'rgba(52, 152, 219, 1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: 'rgba(52, 152, 219, 1)',
+                pointHoverBorderColor: '#fff',
+                pointHoverBorderWidth: 3
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            title: function(context) {
+                                return `Día ${context[0].label.split(' ')[1]}`;
+                            },
+                            label: function(context) {
+                                return `Diagnósticos: ${context.parsed.y}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            maxTicksLimit: 10,
+                            color: '#7f8c8d'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#7f8c8d',
+                            callback: function(value) {
+                                return value + ' casos';
+                            }
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        hoverRadius: 8
+                    }
+                }
+            }
+        });
+    }
+
+    // Función para crear el gráfico de precisión (Mixto: Línea + Barras)
+    function createAccuracyChart() {
+        const container = document.getElementById('accuracy-chart');
+        
+        // Crear canvas si no existe
+        let canvas = container.querySelector('canvas');
+        if (!canvas) {
+            canvas = document.createElement('canvas');
+            canvas.id = 'accuracyChartCanvas';
+            canvas.style.maxHeight = '400px';
+            container.appendChild(canvas);
+        }
+
+        const ctx = canvas.getContext('2d');
+
+        // Preparar datos
+        const chartData = {
+            labels: accuracyData.map(d => d.month),
+            datasets: [
+                {
+                    label: 'Total Diagnósticos',
+                    data: accuracyData.map(d => d.total),
+                    backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                    type: 'bar',
+                    yAxisID: 'y1',
+                    order: 2
+                },
+                {
+                    label: 'Precisión (%)',
+                    data: accuracyData.map(d => d.accuracy),
+                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                    borderColor: 'rgba(46, 204, 113, 1)',
+                    borderWidth: 4,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(46, 204, 113, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 3,
+                    pointRadius: 6,
+                    pointHoverRadius: 10,
+                    type: 'line',
+                    yAxisID: 'y',
+                    order: 1
+                }
+            ]
+        };
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            afterLabel: function(context) {
+                                if (context.datasetIndex === 1) {
+                                    return `Validados: ${accuracyData[context.dataIndex].validated}`;
+                                }
+                                return '';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#7f8c8d'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        min: 80,
+                        max: 100,
+                        ticks: {
+                            color: '#7f8c8d',
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(46, 204, 113, 0.1)',
+                            drawBorder: false
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        ticks: {
+                            color: '#7f8c8d',
+                            callback: function(value) {
+                                return value + ' casos';
+                            }
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Inicializar los gráficos
+    document.addEventListener('DOMContentLoaded', function() {
+        // Pequeño delay para asegurar que los contenedores estén listos
+        setTimeout(() => {
+            createDailyChart();
+            createTypeDistributionChart();
+            createAccuracyChart();
+        }, 100);
+    });
+
+    // Actualizar gráficos al cambiar el tamaño de la ventana
+    window.addEventListener('resize', () => {
+        // Chart.js maneja automáticamente el responsive
+        // Solo recreamos si es necesario
+        setTimeout(() => {
+            Chart.helpers.each(Chart.instances, function(instance) {
+                instance.resize();
+            });
+        }, 100);
+    });
+</script>
+{% endblock %}
