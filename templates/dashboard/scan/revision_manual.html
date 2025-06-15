@@ -6,12 +6,12 @@
 <main class="container-fluid revision-manual">
   <div class="card main-card">
     <div class="card-header patient-header">
-      <div class="patient-info">
-        <h4 class="mb-0">
+      <div class="patient-main-row">
+        <div class="patient-name">
           <i class="fas fa-user-circle"></i>
           {{ diagnostico.paciente.nombres }} {{ diagnostico.paciente.apellidos }}
-        </h4>
-        <div class="patient-details">
+        </div>
+        <div class="patient-meta">
           <span class="detail-item"><i class="fas fa-calendar"></i> {{ diagnostico.fecha_diagnostico|date:"d/m/Y H:i" }}</span>
           <span class="detail-item"><i class="fas fa-user-md"></i> {{ diagnostico.doctor|default:"No asignado" }}</span>
         </div>
@@ -141,4 +141,4 @@
 </main>
 
 
-{% endblock %} 
+{% endblock %}
