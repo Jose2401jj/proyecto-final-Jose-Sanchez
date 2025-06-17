@@ -107,7 +107,7 @@ class PermissionMixin(object):
 
         except Exception as ex:
             print(f"Error al ingresar al módulo: {ex}")
-            return redirect('scanAI:analisis')
+            return redirect('core:scan_list')
 
     def set_group_session(self, request, user):
         groups = user.groups.all().order_by('id')
