@@ -25,14 +25,19 @@ class AnalisisImagenView(View):
         return render(request, 'dashboard/scan/scan_form.html')
 
 
+from django.shortcuts import redirect
+from django.contrib import messages
+import os
+
 class DiagnosticoDeleteView(PermissionMixin, DeleteView):
     model = Diagnostico
     success_url = reverse_lazy('core:scan_list')
     permission_required = 'core.delete_diagnostico'
-    
-    def delete(self, request, *args, **kwargs):
+
+    def get(self, request, *args, **kwargs):
         try:
             diagnostico = self.get_object()
+
             # Eliminar archivos asociados
             for imagen in diagnostico.imagenes.all():
                 if imagen.imagen_original and os.path.isfile(imagen.imagen_original.path):
@@ -41,7 +46,7 @@ class DiagnosticoDeleteView(PermissionMixin, DeleteView):
                     os.remove(imagen.imagen_procesada.path)
                 if imagen.gradcam and os.path.isfile(imagen.gradcam.path):
                     os.remove(imagen.gradcam.path)
-            
+
             # Eliminar informe PDF si existe
             try:
                 informe = diagnostico.informepdf
@@ -49,12 +54,13 @@ class DiagnosticoDeleteView(PermissionMixin, DeleteView):
                     os.remove(informe.archivo_pdf.path)
             except InformePDF.DoesNotExist:
                 pass
-                
+
+            diagnostico.delete()
             messages.success(request, 'Diagnóstico eliminado correctamente.')
-            return super().delete(request, *args, **kwargs)
         except Exception as e:
             messages.error(request, f'Error al eliminar el diagnóstico: {str(e)}')
-            return redirect('core:scan_list')
+
+        return redirect('core:scan_list')
 
 
 class BuscarPacienteAPIView(View):
