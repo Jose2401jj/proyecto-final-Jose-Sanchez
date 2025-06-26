@@ -135,7 +135,7 @@ AWS_STORAGE_BUCKET_NAME=tu_bucket
 
 ⬇️ Descarga el archivo del modelo desde el siguiente enlace de Google Drive y colócalo en la carpeta `static/model/`:
 
-[Descargar modelo InceptionV3 (Google Drive)](https://drive.google.com/tu_enlace_al_modelo)
+[Descargar modelo InceptionV3 (Google Drive)](https://drive.google.com/file/d/1D97tktwtWRs_7SpvgCzjrHl7cqdydZDX/view?usp=sharing)
 
 El archivo debe llamarse exactamente:  
 `inceptionv3.h5`
