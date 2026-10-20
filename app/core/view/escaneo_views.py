@@ -5,7 +5,6 @@ from django.core.files.base import ContentFile
 from django.views import View
 import tempfile
 from app.core.models import Diagnostico, ImagenDiagnostico, Paciente, ResultadoIA, InformePDF
-from neumscan.services.analisis_imagen import analizar_imagen_neumonia
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
@@ -102,6 +101,11 @@ class BuscarPacienteAPIView(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class ProcesarAnalisisAPIView(View):
     def post(self, request):
+        # The model is intentionally imported only when an analysis is requested.
+        # This lets the application start in CI/CD and on first deployment even
+        # when the large .h5 model is mounted later as documented in the README.
+        from neumscan.services.analisis_imagen import analizar_imagen_neumonia
+
         try:
             paciente_id = request.POST.get('paciente_id')
             imagenes = request.FILES.getlist('imagenes')
