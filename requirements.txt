@@ -49,6 +49,7 @@ Pygments==2.19.1
 pyphen==0.17.2
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.0
+psycopg[binary]==3.2.9
 requests==2.32.3
 requests-oauthlib==2.0.0
 rich==14.0.0

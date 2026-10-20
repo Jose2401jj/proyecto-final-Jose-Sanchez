@@ -1,5 +1,8 @@
 # Entorno virtual
 venv/
+.verification-venv/
+.verification-temp/
+verification_packages/
 
 # Archivos de configuración sensibles
 .env
@@ -12,6 +15,7 @@ db.sqlite3
 *.pyc
 __pycache__/
 *.log
+staticfiles/
 
 # Archivos de sistema/editor
 .DS_Store

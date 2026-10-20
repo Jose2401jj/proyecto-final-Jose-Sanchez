@@ -1,0 +1,85 @@
+name: CI/CD Django
+
+on:
+  push:
+    branches: [main, ci-setup]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Pruebas Django
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: neumscan
+          POSTGRES_USER: neumscan
+          POSTGRES_PASSWORD: neumscan_ci_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U neumscan -d neumscan"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      SECRET_KEY: ci-only-secret-key
+      DEBUG: "False"
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      POSTGRES_DB: neumscan
+      POSTGRES_USER: neumscan
+      POSTGRES_PASSWORD: neumscan_ci_password
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: 5432
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+      - name: Instalar bibliotecas del sistema para generación de PDF
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libglib2.0-0 libgl1 libpango-1.0-0 libpangoft2-1.0-0 libpangocairo-1.0-0 libcairo2 libgdk-pixbuf-2.0-0 libffi-dev
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Ejecutar pruebas
+        run: python manage.py test
+
+  build:
+    name: Construcción de imagen
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construir imagen Docker
+        run: docker build --tag neumscan:${{ github.sha }} .
+      - name: Preparar manifiesto de despliegue
+        run: |
+          mkdir -p deployment-artifact
+          docker image inspect neumscan:${{ github.sha }} --format '{{.Id}}' > deployment-artifact/image-id.txt
+          cp docker-compose.yml .env.example deploy-notes.md deployment-artifact/
+      - name: Guardar artefacto del build
+        uses: actions/upload-artifact@v4
+        with:
+          name: neumscan-deployment-${{ github.sha }}
+          path: deployment-artifact
+          if-no-files-found: error
+
+  simulate-deploy:
+    name: Validar despliegue simulado
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar Docker Compose
+        run: |
+          cp .env.example .env
+          docker compose config --quiet
